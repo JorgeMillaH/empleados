@@ -1,0 +1,730 @@
+openapi: 3.0.0
+info:
+  title: employeeCRUD
+  description: 'This API is based in the management of the employees of an enterprise. It is a CRUD API where you can add, remove, edit, and find information related to the employees.'
+  version: 1.0.0
+  contact:
+    name: Jorge
+servers:
+  - url: 'https://localhost:3000'
+    description: Local server for testing and develop the API
+tags:
+  - name: Employee
+    description: Features related to the management of employees of a specific company
+
+paths:
+  /employees:
+    get:
+      summary: Retrieve a list of employees
+      security: 
+        - token:
+          - read
+      description: You get back a list of all the employees of the company
+      operationId: listEmployees
+      tags:
+        - Employee
+      parameters:
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            example: 10
+        - name: offset
+          in: query
+          description: Number of items to skip before the desired information
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 100
+            example: 20
+        - name: firstName
+          in: query
+          description: Filter the results by the name
+          required: false
+          schema:  
+            type: string
+            example: 'Jorge'
+            pattern: '^[A-Z]{1}[a-z]{2,14}'
+            maxLength: 15
+        - name: sortBy
+          in: query
+          description: Field to sort the results by
+          required: false
+          schema:
+            type: string
+            enum:
+              - firstName
+            example: firstName
+        - name: sortOrder
+          in: query
+          description: The sort order of the results
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            example: asc
+      responses:
+        '200':
+          description: A list of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+                maxItems: 10
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        default: 
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+    post:
+      summary: Creates a new employee
+      security:
+        - token: 
+          - write
+      operationId: createEmployee
+      tags:
+        - Employee
+      description: Creates a new employee with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '201':
+          description: The employee was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+
+  '/employees/{employeeId}':
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        schema: 
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 999
+          example: 123
+        description: The ID of the desired employee
+    get:
+      summary: We get the information related to a desire employee
+      description: Retrieve the expected information about one worker
+      security:
+        - token:
+          - read
+      operationId: listOneEmployee
+      tags:
+        - Employee
+      responses: 
+        '200':
+          description: The information related to the desired employee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeBasicInfo'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default: 
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+    put:
+      summary: You can modify completely the information related to one employee
+      description: Operation to modify completely one employee
+      security:
+        - token:
+          - write
+      operationId: editFullEmployee
+      tags:
+        - Employee
+      requestBody:
+        description: The information we want to upload of the desire employee
+        required: true
+        content: 
+          application/json:
+            schema:  
+              $ref: '#/components/schemas/Employee'
+      responses: 
+        '200':
+          description: The operation of modifying the information of the employee has been successfully completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '204': 
+          description: No content
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+    patch:
+      summary:  Partyally updates an existing employee
+      description: Update the specific fields of and employee identified by the employeeId
+      security:
+        - token:
+          - write
+      operationId: patchEmployee
+      tags:
+        - Employee
+      requestBody:
+        description: The information we want to change
+        required: true
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeBasicInfo'
+      responses: 
+        '200':
+          description: Employee successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+    delete:
+      summary: Deletes an employee 
+      description: Deletes the employee by the employeeId
+      security:
+        - token:
+          - delete
+      operationId: deleteEmployee
+      tags:
+        - Employee
+      responses:
+        '200':
+          description: Employee successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default: 
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+       
+  '/employees/{employeeId}/validate-email':
+    parameters:
+      - name: employeeId
+        description: The desire Id of the employee for validating the email
+        in: path
+        required: true
+        schema: 
+          type: integer
+          format: int32
+          minimum: 1 
+          maximum: 999
+          example: 123
+    post:    
+      summary: The request to the external api for validating the email
+      security:
+        - token:  #No estoy seguro de si es read o write (Consultar en un futuro)
+          - read
+      description: Validate the email address
+      operationId: validateEmail
+      tags:
+        - Employee
+      requestBody: 
+        description: The email addres to validate it
+        required: true 
+        content:
+           application/json:
+            schema:
+              type: string
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'empleados@uxcale.com'
+                  pattern: '^[a-z]{1,15}[0-9]{0,3}@uxcale.com$'
+      responses:
+        '200':
+          description: The employee was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '406':
+          $ref: '#/components/responses/notAcceptable'
+        '429':
+          $ref: '#/components/responses/tooManyRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  error:
+                    type: string
+                    example: 'unexpected error'
+                    pattern: '^[\s\S]{1,100}$'
+                  message:
+                    type: string
+                    example: 'An unexpected error occurred while processing the request'
+                    pattern: '^[\s\S]{1,100}$'
+
+components:
+  securitySchemes: 
+    token:
+      type: oauth2
+      flows: 
+        implicit: 
+          authorizationUrl: https://www.example.com:3000
+          scopes:   
+            read: read the information of employees
+            write: make changes and upload new employees
+            delete: removes employees
+  schemas:
+    EmployeeBasicInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        id: 
+          type: integer
+          description: Unique id of the employee
+          example: 1
+          minimum: 1
+          maximum: 999
+        username:
+          type: string
+          description: nickname
+          example: 'jmilla'
+          pattern: '^[A-Za-z0-9]{3,10}$'
+        firstName:
+          type: string
+          description: first name of the employee
+          example: 'Jorge'
+          pattern: '^[A-Za-z\s]{2,15}$'
+        email:
+          type: string
+          description: email of the employee
+          format: email
+          example: 'jmilla@gmail.com'
+          minLength: 4
+          maxLength: 30
+          pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+      required:
+          - id
+          - username
+          - firstName
+          - email
+
+    Employee:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: Unique id of the employee
+          format: int32
+          example: 1
+          minimum: 1
+          maximum: 999
+        username:
+          type: string
+          description: nickname
+          example: 'jmilla4'
+          pattern: '^[a-z]{5,15}[0-9]{1,3}$'
+        firstName:
+          type: string
+          description: first name of the employee
+          example: 'Jorge'
+          pattern: '^[A-Z]{1}[a-z]{2,15}$'
+        lastName:
+          type: string
+          description: first surname
+          example: 'Milla'
+          pattern: '^[A-Z]{1}[a-z]{2,15}$'
+        lastName2:
+          type: string
+          description: second surname
+          example: 'Hernandez'
+          pattern: '^[A-Z]{1}[a-z]{2,15}$'
+        identification:
+          type: string
+          description: Numbers of the DNI
+          example: '70888999A'
+          pattern: '^[0-9]{8}[A-Z]{1}$'
+        email:
+          type: string
+          description: email of the employee
+          format: email
+          example: 'jmilla@uxcale.com'
+          pattern: '^[a-z]{1,10}@uxcale\.com$'
+        phone:
+          type: string
+          description: phone number of the employee
+          pattern: '^\+34\d{9}$'
+          example: '+34600123456'
+        userStatus:
+          type: string
+          description: current status of the employee
+          enum:
+            - ACTIVE
+            - PENDING
+            - REMOVED
+          example: PENDING
+        date:
+          type: string
+          format: date
+          description: Date of birth
+          example: '2024-09-06'
+          minLength: 10
+          maxLength: 10
+      required:
+        - username
+        - firstName
+        - lastName
+        - email
+        - phone
+        - userStatus
+        - date
+  responses:
+    badRequest:
+      description: The request was invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 400
+              error:
+                type: string
+                example: 'bad request'
+                pattern: '^[A-Za-z ]{11}$' 
+              message:
+                type: string
+                example: 'The request parameters were invalid'
+                pattern: '^[A-Za-z ]{10,50}$'
+
+    unauthorized:
+      description: The user is not allowed to access this resource
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 401
+              error:
+                type: string
+                example: 'Unauthorized'
+                pattern: '^[A-Za-z ]{12}$'
+              message:
+                type: string
+                example: 'You cannot access this resource'
+                pattern: '^[A-Za-z ]{10,50}$'
+
+    forbidden:
+      description: The user is not allowed to access this resource
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 403
+              error:
+                type: string
+                example: 'Forbidden'
+                pattern: '^[A-Za-z ]{9}$' 
+              message:
+                type: string
+                example: "You dont have the right to access this resource"
+                pattern: '^[A-Za-z ]{10,100}$' 
+
+    notFound:
+      description: The requested resource was not found
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 404
+              error:
+                type: string
+                example: 'Not found'
+                pattern: '^[A-Za-z ]{9}$'
+              message:
+                type: string
+                example: 'The employee was not found'
+                pattern: '^[A-Za-z ]{10,50}$' 
+
+    internalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 500
+              error:
+                type: string
+                example: 'Internal server error'
+                pattern: '^[A-Za-z ]{21}$' 
+              message:
+                type: string
+                example: 'There is an internal error in the server'
+                pattern: '^[\s\S]{1,60}$'
+    notAcceptable:
+      description: Not acceptable
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 406
+              error:
+                type: string
+                example: 'Not acceptable'
+                pattern: '^[A-Za-z ]{14}$' 
+              message:
+                type: string
+                example: 'The request is not acceptable'
+                pattern: '^[A-Za-z ]{10,50}$'
+    tooManyRequest:
+      description: Too many request
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: integer
+                example: 429
+              error:
+                type: string
+                example: 'Too many request'
+                pattern: '^[A-Za-z ]{16}$'
+              message:
+                type: string
+                example: 'Too many request'
+                pattern: '^[\s\S]{1,100}$'
+    
+  
+
