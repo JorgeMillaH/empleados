@@ -340,7 +340,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              type: object
               properties:
                 email:
                   type: string
@@ -362,6 +362,9 @@ paths:
                   email:
                     type: string
                     format: email
+                    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                    minLength: 1
+                    maxLength: 100
                     example: empleados@uxcale.com
                   isValid:
                     type: boolean
@@ -375,6 +378,7 @@ paths:
                   - email
                   - isValid
                   - employeeId
+                additionalProperties: false
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':
@@ -462,7 +466,6 @@ components:
         - message
       additionalProperties: false
     EmployeeId:
-      title: EmployeeId
       type: object
       properties:
         id:
@@ -471,13 +474,15 @@ components:
           example: 12
           minimum: 1
           maximum: 999
+      required:
+        - id
+      additionalProperties: false
     EmployeeBasicInfo:
       type: object
       additionalProperties: false
       properties:
         id:
-          allOf:
-            - $ref: '#/components/schemas/EmployeeId'
+          $ref: '#/components/schemas/EmployeeId'
         username:
           type: string
           description: nickname
@@ -506,8 +511,11 @@ components:
       additionalProperties: false
       properties:
         id:
-          allOf:
-            - $ref: '#/components/schemas/EmployeeId'
+          type: integer
+          format: int64
+          example: 12
+          minimum: 1
+          maximum: 999
         username:
           type: string
           description: nickname
@@ -760,8 +768,11 @@ components:
               limit: 
                 type: integer
               items: 
-                $ref: '#/components/schemas/Employee'
-            
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/Employee'
+            additionalProperties: false
           examples:
             example-get-employees:
               $ref: '#/components/examples/example-success-200'
@@ -784,12 +795,31 @@ components:
               
   examples:
     example-success-200:
-      summary: Succesfully requested
+      summary: Successfully retrieved employees
       value:
-        code: '200'
-        type: 'SUCCESS'
-        message: '200 Request was successfully'
-        description: 'The request was processed successfully and the data is returned.'
+        offset: 0
+        limit: 10
+        items:
+          - id: 1
+            username: jmilla4
+            firstName: Jorge
+            lastName: Milla
+            lastName2: Hernandez
+            identification: 70888999A
+            email: jmilla@uxcale.com
+            phone: '+34600123456'
+            userStatus: PENDING
+            date: '2024-09-06'
+          - id: 2
+            username: jidedsa5
+            firstName: John
+            lastName: Doe
+            lastName2: Smith
+            identification: 12345678B
+            email: jdoe@uxcale.com
+            phone: '+34600123457'
+            userStatus: ACTIVE
+            date: '2024-09-07'
     example-bad-request-400:
       summary: Bad request
       value: 
