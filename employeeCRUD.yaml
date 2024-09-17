@@ -141,16 +141,7 @@ paths:
 
   '/employees/{employeeId}':
     parameters:
-      - name: employeeId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 999
-          example: 123
-        description: The ID of the desired employee
+      - $ref: '#/components/parameters/EmployeeId'
     get:
       summary: We get the information related to a desire employee
       description: Retrieve the expected information about one worker
@@ -315,16 +306,7 @@ paths:
 
   '/employees/{employeeId}/email':
     parameters:
-      - name: employeeId
-        description: The desire Id of the employee for validating the email
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 999
-          example: 123
+      - $ref: '#/components/parameters/EmployeeId'
     post:
       summary: The request to the external api for validating the email
       security:
@@ -421,6 +403,19 @@ components:
         minLength: 1
         maxLength: 40
         example: 54b9c11c-9162-45a1-a352-0d95734cd079
+  parameters:
+    EmployeeId: 
+      name: employeeId
+      description: The desire Id of the employee for validating the email
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 999
+        example: 123
+
   schemas:
     DefaultError:
       type: object

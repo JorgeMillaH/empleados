@@ -1,0 +1,10 @@
+extends: spectral:oas
+
+rules:
+  info-contact:
+    description: "El campo info.contact es obligatorio, pero lo estamos ajustando."
+    given: "$.info"
+    then:
+      field: contact
+      function: truthy  # Cambiar o ajustar la validación como sea necesario
+      severity: warn    # Puedes cambiar esto a "error" o "off" para desactivar
