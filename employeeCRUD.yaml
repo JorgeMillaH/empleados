@@ -772,7 +772,6 @@ components:
             example-get-employees:
               $ref: '#/components/examples/example-success-200'
             
-
     defaultResponse:
       description: Default error response for unexpected errors.
       headers:
@@ -786,8 +785,7 @@ components:
             example-too-many-request:
               $ref: '#/components/examples/example-default-error'
 
-
-              
+          
   examples:
     example-success-200:
       summary: Successfully retrieved employees

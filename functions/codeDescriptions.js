@@ -37,8 +37,30 @@ const httpStatusDescriptions = {
     "502": "Bad Gateway",
     "503": "Service Unavailable",
     "504": "Gateway Timeout",
-    "505": "HTTP Version Not Supported"
+    "505": "HTTP Version Not Supported",
+    "400BadRequest": "Bad Request",
 };
 
-// Ejemplo de uso:
-console.log(httpStatusDescriptions["code-404"]); // Output: Not Found
+module.exports = (targetVal, opts, paths, otherValues) => {
+    const results = [];
+    const validCodes = opts.validCodes || [];
+
+    Object.keys(targetVal).forEach(code => {
+        // Maneja códigos personalizados junto con códigos numéricos
+        const cleanCode = code.replace(/[^0-9]/g, ''); // Elimina caracteres no numéricos para coincidencias
+
+        if (validCodes.includes(parseInt(cleanCode)) || validCodes.includes(code)) {
+            const description = targetVal[code]?.description || '';
+            const expectedDescription = httpStatusDescriptions[code] || '';
+
+            if (description !== expectedDescription) {
+                results.push({
+                    message: `Code ${code} must have the description '${expectedDescription}' but found '${description}'`,
+                    path: paths.target ? [...paths.target, code, 'description'] : [code, 'description'],
+                });
+            }
+        }
+    });
+
+    return results;
+};

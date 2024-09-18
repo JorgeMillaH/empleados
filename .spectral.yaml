@@ -1,8 +1,19 @@
-extends: ["spectral:oas"]
-
-functions: codeDescriptions
-
-
+functions: [codeDescriptions]
 rules:
-  code-XXX-description:
+  unify-4xx-descriptions:
+    description: "Ensure 4XX responses have the correct description."
+    message: "Code {{value}} must have the description '{{expectedDescription}}'."
+    given: $.responses..400BadRequest.description 
+    then:
+      function: codeDescriptions
+      functionOptions:
+        validCodes:
+          - 400
+          - 401
+          - 403
+          - 404
+          - 406
+          - 415
+          - 422
+          - 429
 
