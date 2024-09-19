@@ -649,7 +649,7 @@ components:
               $ref: '#/components/examples/example-bad-request-400'
     
     401Unauthorized:
-      description: The user is not allowed to access this resource
+      description: "The user is not allowed to access this resource"
       headers: 
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
