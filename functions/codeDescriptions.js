@@ -47,17 +47,17 @@ module.exports = (targetVal, opts, paths, otherValues) => {
 
     // Itera sobre las respuestas para verificar las descripciones
     Object.keys(targetVal).forEach(code => {
-        // Limpia el código si tiene caracteres extraños, pero mantén la clave original
-        const cleanCode = code.replace(/[^0-9]/g, ''); // Sólo números
+        // Limpia el codigo si tiene caracteres extraños, pero manten la clave original
+        const cleanCode = code.replace(/[^0-9]/g, ''); // Solo numeros
 
       
-        // Solo procesa los códigos definidos en validCodes
+        // Solo procesa los codigos definidos en validCodes
         if (validCodes.includes(parseInt(cleanCode))) {
             const description = targetVal[code]?.description || '';
             const expectedDescription = httpStatusDescriptions[cleanCode] || '';
     
 
-            // Si la descripción no coincide, agrega un resultado de error
+            // Si la descripcion no coincide, agrega un resultado de error
             if (description !== expectedDescription) {
                 results.push({
                     message: `Code ${code} must have the description '${expectedDescription}' but found '${description}'`,
