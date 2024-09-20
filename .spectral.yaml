@@ -9,7 +9,7 @@ rules:
     then:
         function: codeDescriptions
         functionOptions:
-          validCodes:
+          validCodes: #Añadir aqui todos los codigos de estado que desees comprobar.
             - 400
             - 401
             - 403
@@ -18,6 +18,6 @@ rules:
             - 415
             - 422
             - 429
-            - 200
+            - 200 
 
     
