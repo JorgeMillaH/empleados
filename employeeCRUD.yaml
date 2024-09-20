@@ -636,7 +636,7 @@ components:
         - date
   responses:
     400BadRequest:
-      description: Bad request
+      description: Bad Request
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -649,7 +649,7 @@ components:
               $ref: '#/components/examples/example-bad-request-400'
     
     401Unauthorized:
-      description: "The user is not allowed to access this resource"
+      description: Unauthorized
       headers: 
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -662,7 +662,7 @@ components:
               $ref: '#/components/examples/example-unauthorized-401'
             
     403Forbidden:
-      description: The user is not allowed to access this resource
+      description: Forbidden
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -675,7 +675,7 @@ components:
               $ref: '#/components/examples/example-forbidden-403'
 
     404NotFound:
-      description: The requested resource was not found
+      description: Not Found
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -688,7 +688,7 @@ components:
               $ref: '#/components/examples/example-not-found-404'
             
     500InternalServerError:
-      description: Internal server error
+      description: Internal Server Error
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -700,7 +700,7 @@ components:
             example-internal-server-error-500:
               $ref: '#/components/examples/example-internal-server-error-500'
     406NotAcceptable:
-      description: Not acceptable
+      description: Not Acceptable
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -713,7 +713,7 @@ components:
               $ref: '#/components/examples/example-not-acceptable-406'
 
     415UnsupportedMediaType:
-      description: The type of the data is not compatible with the resource
+      description: Unsupported Media Type
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -726,7 +726,7 @@ components:
               $ref: '#/components/examples/example-unsupported-415'
     
     422UnsupportedEntity:
-      description: The request was well-formed but was unable to be followed due to semantic errors.
+      description: Unprocessable Entity
       headers:
         X-Request-ID:
           $ref: '#/components/headers/XRequestIdHeader'
@@ -739,7 +739,7 @@ components:
               $ref: '#/components/examples/example-unsupported-entity-422'
 
     429TooManyRequest:
-      description: Too many request
+      description: Too Many Requests
       content:
         application/json:
           schema:
